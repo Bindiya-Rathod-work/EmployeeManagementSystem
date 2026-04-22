@@ -1,0 +1,201 @@
+/* ─── Variables ────────────────────────────────────────────────────────────── */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-bg: #1e2a3a;
+    --sidebar-hover: #2d3f54;
+    --sidebar-active: #3b82f6;
+    --top-navbar-bg: #ffffff;
+    --content-bg: #f4f6f9;
+    --text-muted-custom: #6c757d;
+}
+
+/* ─── Global ────────────────────────────────────────────────────────────────── */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--content-bg);
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────────────────── */
+#sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background-color: var(--sidebar-bg);
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.sidebar-brand {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+    .sidebar-brand:hover {
+        color: #cbd5e1;
+    }
+
+.sidebar-link {
+    color: #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+    .sidebar-link:hover {
+        background-color: var(--sidebar-hover);
+        color: #fff;
+    }
+
+    .sidebar-link.active {
+        background-color: var(--sidebar-active);
+        color: #fff;
+        font-weight: 600;
+    }
+
+/* ─── Main Content ──────────────────────────────────────────────────────────── */
+#page-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    background-color: var(--content-bg);
+}
+
+/* ─── Top Navbar ────────────────────────────────────────────────────────────── */
+.top-navbar {
+    background-color: var(--top-navbar-bg);
+    border-bottom: 1px solid #e2e8f0;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────────── */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 16px 20px;
+    font-weight: 600;
+}
+
+/* ─── Stat Cards (Dashboard) ────────────────────────────────────────────────── */
+.stat-card {
+    border-radius: 12px;
+    padding: 24px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+    .stat-card .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.85;
+    }
+
+    .stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.85;
+    }
+
+/* ─── Login Page ────────────────────────────────────────────────────────────── */
+.login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e2a3a 0%, #2d3f54 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+    .login-card .card-header {
+        background: linear-gradient(135deg, #1e2a3a, #3b82f6);
+        color: white;
+        text-align: center;
+        padding: 28px;
+        border-radius: 16px 16px 0 0 !important;
+    }
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+/* ─── Table ─────────────────────────────────────────────────────────────────── */
+.table th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-muted-custom);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* ─── Badge ─────────────────────────────────────────────────────────────────── */
+.badge {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* ─── Form Labels ───────────────────────────────────────────────────────────── */
+.form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border-color: #d1d5db;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--sidebar-active);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+/* ─── Page Title ────────────────────────────────────────────────────────────── */
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e2a3a;
+    margin-bottom: 4px;
+}
+
+.page-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted-custom);
+}

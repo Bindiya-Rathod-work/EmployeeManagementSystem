@@ -1,0 +1,139 @@
+﻿@page
+@model EmployeeManagementSystem.Pages.Admin.AddEmployeeModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Add Employee";
+    ViewData["ActivePage"] = "AddEmployee";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="page-title">Add Employee</h4>
+        <p class="page-subtitle">Fill in the details to create a new employee account.</p>
+    </div>
+    <a href="/Admin/Employees" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i> Back to Employees
+    </a>
+</div>
+
+<!-- Form Card -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-person-plus-fill me-2"></i> Employee Information
+    </div>
+    <div class="card-body p-4">
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Row 1: First Name, Last Name -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Input.FirstName" class="form-label"></label>
+                    <input asp-for="Input.FirstName" class="form-control" placeholder="Enter first name" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Input.LastName" class="form-label"></label>
+                    <input asp-for="Input.LastName" class="form-control" placeholder="Enter last name" />
+                    <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Row 2: Email, Password -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <input asp-for="Input.Email" class="form-control" placeholder="Enter email address" />
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <div class="input-group">
+                        <input asp-for="Input.Password" class="form-control" placeholder="Min 8 characters" />
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <i class="bi bi-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Row 3: Department, Designation -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Input.Department" class="form-label"></label>
+                    <input asp-for="Input.Department" class="form-control" placeholder="e.g. Engineering" />
+                    <span asp-validation-for="Input.Department" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Input.Designation" class="form-label"></label>
+                    <input asp-for="Input.Designation" class="form-control" placeholder="e.g. Software Engineer" />
+                    <span asp-validation-for="Input.Designation" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Row 4: Date of Joining, Phone -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Input.DateOfJoining" class="form-label"></label>
+                    <input asp-for="Input.DateOfJoining" class="form-control" type="date" />
+                    <span asp-validation-for="Input.DateOfJoining" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Row 5: Address -->
+            <div class="mb-4">
+                <label asp-for="Input.Address" class="form-label"></label>
+                <textarea asp-for="Input.Address"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Enter full address"></textarea>
+                <span asp-validation-for="Input.Address" class="text-danger small"></span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-lg me-2"></i> Create Employee
+                </button>
+                <a href="/Admin/Employees" class="btn btn-outline-secondary px-4">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const input = document.getElementById('Input_Password');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+    </script>
+}

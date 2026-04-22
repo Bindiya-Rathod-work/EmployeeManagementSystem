@@ -1,0 +1,174 @@
+﻿@page
+@model EmployeeManagementSystem.Pages.Admin.EmployeesModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Employees";
+    ViewData["ActivePage"] = "Employees";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="page-title">Employees</h4>
+        <p class="page-subtitle">Manage all employee records.</p>
+    </div>
+    <a href="/Admin/AddEmployee" class="btn btn-primary">
+        <i class="bi bi-person-plus-fill me-2"></i> Add Employee
+    </a>
+</div>
+
+<!-- Success / Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Employee Table -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-person-lines-fill me-2"></i> All Employees
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="employeesTable" class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Joined</th>
+                        <th>Documents</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emp in Model.Employees)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-circle">
+                                        @emp.FirstName[0]@emp.LastName[0]
+                                    </div>
+                                    <span class="fw-medium">@emp.FirstName @emp.LastName</span>
+                                </div>
+                            </td>
+                            <td>@emp.Email</td>
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    @emp.Department
+                                </span>
+                            </td>
+                            <td>@emp.Designation</td>
+                            <td>@emp.DateOfJoining.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>
+                                    @emp.Documents.Count
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- View -->
+                                    <a href="/Admin/EmployeeDetails?id=@emp.Id"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <!-- Edit -->
+                                    <a href="/Admin/EditEmployee?id=@emp.Id"
+                                           class="btn btn-sm btn-outline-warning"
+                                           title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <!-- Delete -->
+                                    <button class="btn btn-sm btn-outline-danger btn-delete"
+                                            data-id="@emp.Id"
+                                            data-name="@emp.FirstName @emp.LastName"
+                                            title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden delete form -->
+<form id="deleteForm" method="post" asp-page-handler="Delete">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="deleteEmployeeId" name="id" />
+</form>
+
+@section Styles {
+    <style>
+        .avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // ─── Initialize DataTable ─────────────────────────────────────────
+        $(document).ready(function () {
+            $('#employeesTable').DataTable({
+                pageLength: 10,
+                order: [[4, 'desc']],
+                columnDefs: [{ orderable: false, targets: 6 }],
+                language: {
+                    emptyTable: "No employees found."
+                }
+            });
+        });
+
+        // ─── Soft Delete with SweetAlert2 confirmation ────────────────────
+        document.querySelectorAll('.btn-delete').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                Swal.fire({
+                    title: 'Delete Employee?',
+                    text: `Are you sure you want to delete "${name}"? This action can not be undone.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('deleteEmployeeId').value = id;
+                        document.getElementById('deleteForm').submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,114 @@
+﻿@page
+@model EmployeeManagementSystem.Pages.EmployeePortal.ProfileModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "My Profile";
+    ViewData["ActivePage"] = "Profile";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="page-title">My Profile</h4>
+        <p class="page-subtitle">Your basic profile information.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center p-4">
+
+                <!-- Avatar -->
+                <div class="avatar-lg mx-auto mb-3">
+                    @Model.Profile.FullName.Split(' ')[0][0]@Model.Profile.FullName.Split(' ')[1][0]
+                </div>
+
+                <h5 class="fw-bold mb-1">@Model.Profile.FullName</h5>
+                <p class="text-muted mb-1">@Model.Profile.Designation</p>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-4">
+                    @Model.Profile.Department
+                </span>
+
+                <hr />
+
+                <!-- Profile Details -->
+                <div class="text-start">
+                    <div class="detail-row">
+                        <i class="bi bi-envelope text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Email Address</small>
+                            <span>@Model.Profile.Email</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-telephone text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Phone Number</small>
+                            <span>@(Model.Profile.PhoneNumber ?? "Not provided")</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-building text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Department</small>
+                            <span>@Model.Profile.Department</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-briefcase text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Designation</small>
+                            <span>@Model.Profile.Designation</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-calendar-check text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Date of Joining</small>
+                            <span>@Model.Profile.DateOfJoining.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 auto;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+            .detail-row:last-child {
+                border-bottom: none;
+            }
+
+            .detail-row i {
+                font-size: 1.1rem;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+    </style>
+}

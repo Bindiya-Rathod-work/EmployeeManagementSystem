@@ -1,0 +1,345 @@
+﻿@page
+@model EmployeeManagementSystem.Pages.Admin.EmployeeDetailsModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Employee Details";
+    ViewData["ActivePage"] = "Employees";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="page-title">Employee Details</h4>
+        <p class="page-subtitle">View full profile and manage documents.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/Admin/EditEmployee?id=@Model.Employee.Id"
+               class="btn btn-warning">
+            <i class="bi bi-pencil me-2"></i> Edit Employee
+        </a>
+        <a href="/Admin/Employees" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back
+        </a>
+    </div>
+</div>
+
+<!-- Success / Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+
+    <!-- ─── Left: Employee Profile Card ──────────────────────────────── -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+
+                <!-- Avatar -->
+                <div class="avatar-lg mx-auto mb-3">
+                    @Model.Employee.FirstName[0]@Model.Employee.LastName[0]
+                </div>
+
+                <h5 class="fw-bold mb-1">
+                    @Model.Employee.FirstName @Model.Employee.LastName
+                </h5>
+                <p class="text-muted mb-3">@Model.Employee.Designation</p>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-4">
+                    @Model.Employee.Department
+                </span>
+
+                <hr />
+
+                <!-- Details List -->
+                <div class="text-start">
+                    <div class="detail-row">
+                        <i class="bi bi-envelope text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Email</small>
+                            <span>@Model.Employee.Email</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-telephone text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Phone</small>
+                            <span>@(Model.Employee.PhoneNumber ?? "Not provided")</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-calendar-check text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Date of Joining</small>
+                            <span>@Model.Employee.DateOfJoining.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <i class="bi bi-geo-alt text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">Address</small>
+                            <span>@(Model.Employee.Address ?? "Not provided")</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Right: Documents Card ─────────────────────────────────────── -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
+                    Documents (@Model.Documents.Count())
+                </span>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Upload Form -->
+                <form method="post"
+                      asp-page-handler="Upload"
+                      enctype="multipart/form-data"
+                      class="mb-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="employeeId" value="@Model.Employee.Id" />
+
+                    <label class="form-label fw-medium">
+                        <i class="bi bi-upload me-1"></i> Upload PDF Document
+                    </label>
+                    <div class="input-group">
+                        <input type="file"
+                               name="file"
+                               class="form-control"
+                               accept=".pdf"
+                               required />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i> Upload
+                        </button>
+                    </div>
+                    <small class="text-muted">Only PDF files are accepted. Maximum size: 10MB.</small>
+                </form>
+
+                <hr />
+
+                <!-- Documents List -->
+                @if (Model.Documents.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Uploaded</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var doc in Model.Documents)
+                                {
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                            @doc.FileName
+                                        </td>
+                                        <td>@((doc.FileSizeInBytes / 1024.0).ToString("F1")) KB</td>
+                                        <td>@doc.UploadedAt.ToString("MMM dd, yyyy")</td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <!-- View PDF -->
+                                                @* <a href="/Admin/ViewDocument?id=@doc.Id"
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       target="_blank"
+                                                       title="View PDF">
+                                                    <i class="bi bi-eye"></i>
+                                                </a> *@
+                                                <!-- View PDF in Modal -->
+                                                <button class="btn btn-sm btn-outline-primary btn-view-pdf"
+                                                        data-id="@doc.Id"
+                                                        data-name="@doc.FileName"
+                                                        title="View PDF">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <!-- Delete -->
+                                                <button class="btn btn-sm btn-outline-danger btn-delete-doc"
+                                                        data-id="@doc.Id"
+                                                        data-name="@doc.FileName"
+                                                        title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-file-earmark-x fs-2 d-block mb-2"></i>
+                        No documents uploaded yet.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Hidden delete document form -->
+<form id="deleteDocForm" method="post" asp-page-handler="DeleteDocument">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="deleteDocId" name="id" />
+    <input type="hidden" name="employeeId" value="@Model.Employee.Id" />
+</form>
+
+<!-- ─── PDF Viewer Modal ──────────────────────────────────────────── -->
+<div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h6 class="modal-title fw-semibold">
+                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                    <span id="pdfModalTitle">Document</span>
+                </h6>
+                <div class="d-flex gap-2 align-items-center">
+                    <a id="pdfDownloadBtn"
+                           href="#"
+                           class="btn btn-sm btn-outline-primary"
+                           download>
+                        <i class="bi bi-download me-1"></i> Download
+                    </a>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+            </div>
+
+            <div class="modal-body p-0">
+                <!-- Loading spinner shown while PDF loads -->
+                <div id="pdfLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2">Loading document...</p>
+                </div>
+                <!-- iframe renders PDF inline using browser's native renderer -->
+                <iframe id="pdfIframe"
+                        src=""
+                        style="width:100%; height:80vh; border:none; display:none;"
+                        onload="document.getElementById('pdfLoading').style.display='none';
+                    document.getElementById('pdfIframe').style.display='block';">
+                </iframe>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+            .detail-row:last-child {
+                border-bottom: none;
+            }
+
+            .detail-row i {
+                font-size: 1.1rem;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // ─── Delete document with SweetAlert2 confirmation ────────────────
+        document.querySelectorAll('.btn-delete-doc').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                Swal.fire({
+                    title: 'Delete Document?',
+                    text: `Are you sure you want to delete "${name}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('deleteDocId').value = id;
+                        document.getElementById('deleteDocForm').submit();
+                    }
+                });
+            });
+        });
+                // ─── Open PDF in modal viewer ─────────────────────────────────────
+        document.querySelectorAll('.btn-view-pdf').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                // Set modal title and download link
+                document.getElementById('pdfModalTitle').textContent = name;
+                document.getElementById('pdfDownloadBtn').href = `/Admin/ViewDocument?id=${id}`;
+
+                // Reset iframe and show loading spinner
+                const iframe = document.getElementById('pdfIframe');
+                const loading = document.getElementById('pdfLoading');
+                iframe.style.display = 'none';
+                loading.style.display = 'block';
+
+                // Load PDF into iframe
+                iframe.src = `/Admin/ViewDocument?id=${id}`;
+
+                // Open modal
+                const modal = new bootstrap.Modal(document.getElementById('pdfViewerModal'));
+                modal.show();
+            });
+        });
+
+        // ─── Clear iframe src when modal closes to stop PDF rendering ─────
+        document.getElementById('pdfViewerModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('pdfIframe').src = '';
+        });
+    </script>
+}

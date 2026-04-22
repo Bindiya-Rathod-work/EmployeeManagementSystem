@@ -39,51 +39,68 @@ namespace EmployeeManagementSystem.Services.Implementations
         }
 
         /// <summary>
-        /// Validates and saves uploaded PDF to the Uploads folder on disk.
-        /// Stores file metadata (name, path, size) in the database.
+        /// Validates and saves multiple PDF files to the Uploads folder on disk.
+        /// Processes each file individually and collects errors for failed uploads.
         /// Only PDF files under 10MB are accepted.
         /// </summary>
-        public async Task<(bool Success, string ErrorMessage)> UploadDocumentAsync(string employeeId, IFormFile file)
+        public async Task<(bool Success, string ErrorMessage)> UploadDocumentsAsync(string employeeId, IList<IFormFile> files)
         {
-            // ─── Validate file type ───────────────────────────────────────
-            if (file == null || file.Length == 0)
-                return (false, "No file was selected.");
+            // ─── Validate files list ──────────────────────────────────────────
+            if (files == null || files.Count == 0)
+                return (false, "No files were selected.");
 
-            if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
-                return (false, "Only PDF files are allowed.");
+            var errors = new List<string>();
 
-            // ─── Validate file size (max 10MB) ────────────────────────────
-            if (file.Length > 10 * 1024 * 1024)
-                return (false, "File size must not exceed 10MB.");
-
-            // ─── Build unique file name to avoid conflicts ────────────────
-            var uniqueFileName = $"{employeeId}_{DateTime.UtcNow:yyyyMMddHHmmss}_{file.FileName}";
-            var uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads");
-
-            // ─── Ensure uploads directory exists ─────────────────────────
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            // ─── Save file to disk ────────────────────────────────────────
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            foreach (var file in files)
             {
-                await file.CopyToAsync(stream);
+                // ─── Validate file type ───────────────────────────────────────
+                if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    errors.Add($"{file.FileName} is not a PDF file.");
+                    continue;
+                }
+
+                // ─── Validate file size (max 10MB) ────────────────────────────
+                if (file.Length > 10 * 1024 * 1024)
+                {
+                    errors.Add($"{file.FileName} exceeds the 10MB size limit.");
+                    continue;
+                }
+
+                // ─── Build unique file name to avoid conflicts ────────────────
+                var uniqueFileName = $"{employeeId}_{DateTime.UtcNow:yyyyMMddHHmmss}_{file.FileName}";
+                var uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads");
+
+                // ─── Ensure uploads directory exists ─────────────────────────
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // ─── Save file to disk ────────────────────────────────────────
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                // ─── Save metadata to database ────────────────────────────────
+                var document = new EmployeeDocument
+                {
+                    EmployeeId = employeeId,
+                    FileName = file.FileName,
+                    FilePath = filePath,
+                    FileType = file.ContentType,
+                    FileSizeInBytes = file.Length,
+                    UploadedAt = DateTime.UtcNow
+                };
+
+                await _documentRepository.AddAsync(document);
             }
 
-            // ─── Save metadata to database ────────────────────────────────
-            var document = new EmployeeDocument
-            {
-                EmployeeId = employeeId,
-                FileName = file.FileName,
-                FilePath = filePath,
-                FileType = file.ContentType,
-                FileSizeInBytes = file.Length,
-                UploadedAt = DateTime.UtcNow
-            };
+            // ─── Return result with any errors encountered ────────────────────
+            if (errors.Count > 0)
+                return (false, string.Join(" | ", errors));
 
-            await _documentRepository.AddAsync(document);
             return (true, string.Empty);
         }
 

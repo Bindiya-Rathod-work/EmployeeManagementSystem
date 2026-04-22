@@ -48,10 +48,10 @@ namespace EmployeeManagementSystem.Pages.Admin
         }
 
         /// <summary>
-        /// POST: Handle PDF file upload for a specific employee.
-        /// Validates file type and size before saving.
+        /// POST: Handle multiple PDF file uploads for a specific employee.
+        /// Validates each file individually for type and size.
         /// </summary>
-        public async Task<IActionResult> OnPostUploadAsync(string employeeId, IFormFile file)
+        public async Task<IActionResult> OnPostUploadAsync(string employeeId, IList<IFormFile> files)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
             if (employee == null)
@@ -60,10 +60,10 @@ namespace EmployeeManagementSystem.Pages.Admin
                 return RedirectToPage("/Admin/Employees");
             }
 
-            var (success, errorMessage) = await _documentService.UploadDocumentAsync(employeeId, file);
+            var (success, errorMessage) = await _documentService.UploadDocumentsAsync(employeeId, files);
 
             TempData[success ? "Success" : "Error"] = success
-                ? "Document uploaded successfully."
+                ? "Documents uploaded successfully."
                 : errorMessage;
 
             return RedirectToPage(new { id = employeeId });

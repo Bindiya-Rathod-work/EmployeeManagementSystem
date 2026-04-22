@@ -121,15 +121,19 @@
                     </label>
                     <div class="input-group">
                         <input type="file"
-                               name="file"
+                               name="files"
                                class="form-control"
                                accept=".pdf"
+                               multiple
                                required />
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-upload me-1"></i> Upload
                         </button>
                     </div>
-                    <small class="text-muted">Only PDF files are accepted. Maximum size: 10MB.</small>
+                    <small class="text-muted">
+                        Only PDF files are accepted. Maximum size: 10MB per file.
+                        You can select multiple files at once.
+                    </small>
                 </form>
 
                 <hr />

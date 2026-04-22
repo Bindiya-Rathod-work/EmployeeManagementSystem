@@ -16,10 +16,10 @@ namespace EmployeeManagementSystem.Services.Interfaces
         Task<EmployeeDocument?> GetDocumentByIdAsync(int id);
 
         /// <summary>
-        /// Saves PDF file to disk and stores metadata in database.
-        /// Returns success flag and error message if any.
+        /// Saves multiple PDF files to disk and stores metadata in database.
+        /// Returns list of errors for any failed uploads.
         /// </summary>
-        Task<(bool Success, string ErrorMessage)> UploadDocumentAsync(string employeeId, IFormFile file);
+        Task<(bool Success, string ErrorMessage)> UploadDocumentsAsync(string employeeId, IList<IFormFile> files);
 
         /// <summary>
         /// Soft deletes document record and removes physical file from disk.

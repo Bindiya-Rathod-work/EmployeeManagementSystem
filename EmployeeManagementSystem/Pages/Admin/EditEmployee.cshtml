@@ -39,12 +39,12 @@
             <!-- Row 1: First Name, Last Name -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Input.FirstName" class="form-label"></label>
+                    <label asp-for="Input.FirstName" class="form-label required"></label>
                     <input asp-for="Input.FirstName" class="form-control" placeholder="Enter first name" />
                     <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Input.LastName" class="form-label"></label>
+                    <label asp-for="Input.LastName" class="form-label required"></label>
                     <input asp-for="Input.LastName" class="form-control" placeholder="Enter last name" />
                     <span asp-validation-for="Input.LastName" class="text-danger small"></span>
                 </div>
@@ -53,7 +53,7 @@
             <!-- Row 2: Email -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Input.Email" class="form-label"></label>
+                    <label asp-for="Input.Email" class="form-label required"></label>
                     <input asp-for="Input.Email" class="form-control" placeholder="Enter email address" />
                     <span asp-validation-for="Input.Email" class="text-danger small"></span>
                 </div>
@@ -67,12 +67,12 @@
             <!-- Row 3: Department, Designation -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Input.Department" class="form-label"></label>
+                    <label asp-for="Input.Department" class="form-label required"></label>
                     <input asp-for="Input.Department" class="form-control" placeholder="e.g. Engineering" />
                     <span asp-validation-for="Input.Department" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Input.Designation" class="form-label"></label>
+                    <label asp-for="Input.Designation" class="form-label required"></label>
                     <input asp-for="Input.Designation" class="form-control" placeholder="e.g. Software Engineer" />
                     <span asp-validation-for="Input.Designation" class="text-danger small"></span>
                 </div>
@@ -81,7 +81,7 @@
             <!-- Row 4: Date of Joining -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Input.DateOfJoining" class="form-label"></label>
+                    <label asp-for="Input.DateOfJoining" class="form-label required"></label>
                     <input asp-for="Input.DateOfJoining" class="form-control" type="date" />
                     <span asp-validation-for="Input.DateOfJoining" class="text-danger small"></span>
                 </div>

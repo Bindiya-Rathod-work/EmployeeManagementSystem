@@ -30,12 +30,26 @@ namespace EmployeeManagementSystem.Pages.Admin
 
         /// <summary>
         /// POST: Validate form and create new employee account.
-        /// On success redirects to Employee list with success message.
+        /// If email belongs to an inactive employee, redirect admin
+        /// to inactive list with a helpful message instead of crashing.
         /// </summary>
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
+
+            // ─── Check if inactive employee with same email exists ────────────
+            var inactiveEmployees = await _employeeService.GetInactiveEmployeesAsync();
+            var existingInactive = inactiveEmployees
+                .FirstOrDefault(e => e.Email?.ToLower() == Input.Email.ToLower());
+
+            if (existingInactive != null)
+            {
+                // ─── Guide admin to reactivate instead of creating duplicate ──
+                TempData["Error"] = $"An inactive employee with email '{Input.Email}' already exists. " +
+                                     $"Please reactivate them from the Inactive list instead.";
+                return RedirectToPage("/Admin/Employees", new { filter = "inactive" });
+            }
 
             var (success, errors) = await _employeeService.CreateEmployeeAsync(Input);
 

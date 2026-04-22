@@ -120,5 +120,26 @@ namespace EmployeeManagementSystem.Services.Implementations
             await _employeeRepository.SoftDeleteAsync(id);
             return true;
         }
+        /// <summary>
+        /// Returns all inactive employees from the repository.
+        /// </summary>
+        public async Task<IEnumerable<Employee>> GetInactiveEmployeesAsync()
+        {
+            return await _employeeRepository.GetInactiveAsync();
+        }
+
+        /// <summary>
+        /// Reactivates a soft deleted employee by ID.
+        /// </summary>
+        public async Task<bool> ReactivateEmployeeAsync(string id)
+        {
+            var employee = await _employeeRepository
+                .GetInactiveAsync();
+
+            if (employee == null) return false;
+
+            await _employeeRepository.ReactivateAsync(id);
+            return true;
+        }
     }
 }

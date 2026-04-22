@@ -21,5 +21,11 @@ namespace EmployeeManagementSystem.Repositories.Interfaces
 
         /// <summary>Soft deletes an employee by setting IsDeleted = true.</summary>
         Task SoftDeleteAsync(string id);
+
+        /// <summary>Returns all soft deleted employees.</summary>
+        Task<IEnumerable<Employee>> GetInactiveAsync();
+
+        /// <summary>Reactivates a soft deleted employee.</summary>
+        Task ReactivateAsync(string id);
     }
 }

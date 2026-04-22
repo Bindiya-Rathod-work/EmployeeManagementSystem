@@ -199,3 +199,11 @@ body {
     font-size: 0.9rem;
     color: var(--text-muted-custom);
 }
+
+/* ─── Required Field Asterisk ───────────────────────────────────────────────── */
+/* Automatically adds red asterisk to any label that follows a required input */
+.form-label.required::after {
+    content: " *";
+    color: #ef4444;
+    font-weight: 600;
+}

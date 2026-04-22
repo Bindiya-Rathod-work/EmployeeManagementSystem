@@ -90,5 +90,39 @@ namespace EmployeeManagementSystem.Repositories.Implementations
                 await _context.SaveChangesAsync();
             }
         }
+        /// <summary>
+        /// Returns all soft deleted employees.
+        /// IgnoreQueryFilters is used to bypass the global IsDeleted filter.
+        /// </summary>
+        public async Task<IEnumerable<Employee>> GetInactiveAsync()
+        {
+            // ─── Get all Admin IDs to exclude from list ───────────────────────
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            var adminIds = adminUsers.Select(a => a.Id).ToHashSet();
+
+            return await _context.Users
+                .IgnoreQueryFilters()
+                .Include(e => e.Documents.Where(d => !d.IsDeleted))
+                .Where(e => e.IsDeleted && !adminIds.Contains(e.Id))
+                .OrderByDescending(e => e.UpdatedAt)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Reactivates a soft deleted employee by setting IsDeleted = false.
+        /// </summary>
+        public async Task ReactivateAsync(string id)
+        {
+            var employee = await _context.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee != null)
+            {
+                employee.IsDeleted = false;
+                employee.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

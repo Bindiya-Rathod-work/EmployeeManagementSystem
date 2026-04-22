@@ -33,10 +33,35 @@
     </div>
 }
 
+<!-- Filter Toggle -->
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a href="/Admin/Employees?filter=active"
+               class="btn @(Model.Filter == "active" ? "btn-primary" : "btn-outline-primary")">
+            <i class="bi bi-person-check me-1"></i> Active
+            <span class="badge bg-white text-primary ms-1">@Model.ActiveCount</span>
+        </a>
+        <a href="/Admin/Employees?filter=inactive"
+               class="btn @(Model.Filter == "inactive" ? "btn-danger" : "btn-outline-danger")">
+            <i class="bi bi-person-x me-1"></i> Inactive
+            <span class="badge bg-white text-danger ms-1">@Model.InactiveCount</span>
+        </a>
+    </div>
+</div>
+
 <!-- Employee Table -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-person-lines-fill me-2"></i> All Employees
+        @if (Model.Filter == "inactive")
+        {
+            <i class="bi bi-person-x-fill text-danger me-2"></i>
+            <span class="text-danger">Inactive Employees</span>
+        }
+        else
+        {
+            <i class="bi bi-person-lines-fill me-2"></i>
+            <span>Active Employees</span>
+        }
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -58,20 +83,24 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-circle">
+                                    <div class="avatar-circle @(Model.Filter == "inactive" ? "inactive" : "")">
                                         @emp.FirstName[0]@emp.LastName[0]
                                     </div>
-                                    <span class="fw-medium">@emp.FirstName @emp.LastName</span>
+                                    <span class="fw-medium @(Model.Filter == "inactive" ? "text-muted" : "")">
+                                        @emp.FirstName @emp.LastName
+                                    </span>
                                 </div>
                             </td>
-                            <td>@emp.Email</td>
+                            <td class="@(Model.Filter == "inactive" ? "text-muted" : "")">@emp.Email</td>
                             <td>
-                                <span class="badge bg-primary-subtle text-primary">
+                                <span class="badge @(Model.Filter == "inactive" ? "bg-secondary-subtle text-secondary" : "bg-primary-subtle text-primary")">
                                     @emp.Department
                                 </span>
                             </td>
-                            <td>@emp.Designation</td>
-                            <td>@emp.DateOfJoining.ToString("MMM dd, yyyy")</td>
+                            <td class="@(Model.Filter == "inactive" ? "text-muted" : "")">@emp.Designation</td>
+                            <td class="@(Model.Filter == "inactive" ? "text-muted" : "")">
+                                @emp.DateOfJoining.ToString("MMM dd, yyyy")
+                            </td>
                             <td>
                                 <span class="badge bg-secondary-subtle text-secondary">
                                     <i class="bi bi-file-earmark-pdf me-1"></i>
@@ -80,25 +109,38 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <!-- View -->
-                                    <a href="/Admin/EmployeeDetails?id=@emp.Id"
-                                           class="btn btn-sm btn-outline-primary"
-                                           title="View Details">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <!-- Edit -->
-                                    <a href="/Admin/EditEmployee?id=@emp.Id"
-                                           class="btn btn-sm btn-outline-warning"
-                                           title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <!-- Delete -->
-                                    <button class="btn btn-sm btn-outline-danger btn-delete"
-                                            data-id="@emp.Id"
-                                            data-name="@emp.FirstName @emp.LastName"
-                                            title="Delete">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    @if (Model.Filter == "inactive")
+                                    {
+                                        <!-- Reactivate -->
+                                        <button class="btn btn-sm btn-outline-success btn-reactivate"
+                                                data-id="@emp.Id"
+                                                data-name="@emp.FirstName @emp.LastName"
+                                                title="Reactivate Employee">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Reactivate
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <!-- View -->
+                                        <a href="/Admin/EmployeeDetails?id=@emp.Id"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <!-- Edit -->
+                                        <a href="/Admin/EditEmployee?id=@emp.Id"
+                                               class="btn btn-sm btn-outline-warning"
+                                               title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <!-- Delete -->
+                                        <button class="btn btn-sm btn-outline-danger btn-delete"
+                                                data-id="@emp.Id"
+                                                data-name="@emp.FirstName @emp.LastName"
+                                                title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
                                 </div>
                             </td>
                         </tr>
@@ -113,6 +155,12 @@
 <form id="deleteForm" method="post" asp-page-handler="Delete">
     @Html.AntiForgeryToken()
     <input type="hidden" id="deleteEmployeeId" name="id" />
+</form>
+
+<!-- Hidden reactivate form -->
+<form id="reactivateForm" method="post" asp-page-handler="Reactivate">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="reactivateEmployeeId" name="id" />
 </form>
 
 @section Styles {
@@ -130,6 +178,10 @@
             font-weight: 700;
             flex-shrink: 0;
         }
+
+            .avatar-circle.inactive {
+                background: linear-gradient(135deg, #9ca3af, #6b7280);
+            }
     </style>
 }
 
@@ -138,7 +190,8 @@
         // ─── Initialize DataTable ─────────────────────────────────────────
         $(document).ready(function () {
             $('#employeesTable').DataTable({
-                pageLength: 10,
+                pageLength: 5,
+                lengthMenu: [5, 10, 25],
                 order: [[4, 'desc']],
                 columnDefs: [{ orderable: false, targets: 6 }],
                 language: {
@@ -152,20 +205,42 @@
             btn.addEventListener('click', function () {
                 const id = this.dataset.id;
                 const name = this.dataset.name;
-
                 Swal.fire({
-                    title: 'Delete Employee?',
-                    text: `Are you sure you want to delete "${name}"? This action can not be undone.`,
+                    title: 'Deactivate Employee?',
+                    text: `Are you sure you want to deactivate "${name}"?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#ef4444',
                     cancelButtonColor: '#6b7280',
-                    confirmButtonText: 'Yes, Delete',
+                    confirmButtonText: 'Yes, Deactivate',
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         document.getElementById('deleteEmployeeId').value = id;
                         document.getElementById('deleteForm').submit();
+                    }
+                });
+            });
+        });
+
+        // ─── Reactivate with SweetAlert2 confirmation ─────────────────────
+        document.querySelectorAll('.btn-reactivate').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+                Swal.fire({
+                    title: 'Reactivate Employee?',
+                    text: `Are you sure you want to reactivate "${name}"?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Reactivate',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('reactivateEmployeeId').value = id;
+                        document.getElementById('reactivateForm').submit();
                     }
                 });
             });

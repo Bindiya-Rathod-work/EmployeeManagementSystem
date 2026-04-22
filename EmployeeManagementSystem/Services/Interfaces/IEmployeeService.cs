@@ -23,5 +23,10 @@ namespace EmployeeManagementSystem.Services.Interfaces
 
         /// <summary>Soft deletes an employee by ID.</summary>
         Task<bool> SoftDeleteEmployeeAsync(string id);
+        /// <summary>Returns all inactive (soft deleted) employees.</summary>
+        Task<IEnumerable<Employee>> GetInactiveEmployeesAsync();
+
+        /// <summary>Reactivates a soft deleted employee by ID.</summary>
+        Task<bool> ReactivateEmployeeAsync(string id);
     }
 }

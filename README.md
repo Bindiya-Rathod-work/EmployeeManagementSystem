@@ -1,6 +1,6 @@
 # Employee Management System
 
-A role-based Employee Management System built with **ASP.NET Core Razor Pages**, **Entity Framework Core**, and **PostgreSQL**. Developed as part of a technical assessment to demonstrate senior-level .NET development practices.
+A role-based Employee Management System built with **ASP.NET Core Razor Pages**, **Entity Framework Core**, and **PostgreSQL**. 
 
 ---
 
@@ -121,13 +121,6 @@ The application will seed a default Admin account on first run.
 
 ---
 
-## 📸 Screenshots
-
-> *(Add screenshots of Login, Dashboard, Employee List, and PDF Viewer here)*
-
----
-
 ## 👨‍💻 Author
 
 Developed by Bindiya
-Senior Software Engineer

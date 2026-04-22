@@ -44,7 +44,7 @@ namespace EmployeeManagementSystem.ViewModels
         [Display(Name = "Date of Joining")]
         public DateTime DateOfJoining { get; set; } = DateTime.Today;
 
-        [MaxLength(15)]
+        [MaxLength(10)]
         [Phone(ErrorMessage = "Invalid phone number.")]
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }

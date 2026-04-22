@@ -91,7 +91,10 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Enter phone number"
+                            pattern="[0-9]*"
+                           inputmode="numeric"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
                 </div>
             </div>
